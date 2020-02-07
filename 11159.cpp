@@ -61,7 +61,7 @@ template <typename T, typename... Args> void err(istream_iterator<string> it, T 
 //int dx[]={-1,-1,+0,+1,+1,+0};int dy[]={-1,+1,+2,+1,-1,-2}; ///Hexagonal Direction
 
 //-----I/O------
-char tcstr[100009];
+char tcstr[300];
 void scan(int &a){scanf("%d",&a);}
 void scan(LLD &a){scanf("%lld",&a);}
 void scan(char &a){scanf("%c",&a);}
@@ -76,70 +76,108 @@ void print(double a){printf("%lf",a);}
 void print(string a){printf("%s",a.c_str());}
 //-----I/O-------
 
+
 int main()
 {
-    char st[100009],ch;
-    while(scanf("%s",st)==1)
+    ///this problem is not solved, i have to learn some new things.....
+    int t;
+    scan(t);
+    for(int i=1;i<=t;i++)
     {
-        scan(ch);
-        //string st=stp;
-        char main_str[100009];
-        main_str[0]='\0';
-        vector<pair<int,int> > v;
-        int flag=0, s_pos=0, j=0, i=0;
-        //int sz=strlen(st);
-
-        for(;st[i]!='\0';i++)
+        int n,m;
+        scan(n);
+        int a[n];
+        for(int j=0;j<n;j++)
         {
-            if(st[i]=='[')
-            {
-                if((i-s_pos)>=2&&flag)
-                {
-                    v.push_back({s_pos, i});
-                }
-                s_pos=i;
-                flag=1;
-            }
-            else if(st[i]==']')
-            {
-                if((i-s_pos)>=2&&flag)
-                {
-                    v.push_back({s_pos, i});
-                }
-                flag=0;
-            }
-            else
-            {
-                if(!flag)
-                {
-                    main_str[j]=st[i];
-                    j++;
-                    main_str[j]='\0';
-                }
-            }
-
+            scan(a[j]);
+        }
+        scan(m);
+        int b[m];
+        for(int j=0;j<m;j++)
+        {
+            scan(b[j]);
         }
 
-        if(flag)
+        vector<pair<int,char> > nodeA[n],nodeB[m];
+        for(int j=0;j<n;j++)
         {
-            if((i-s_pos)>=2)
+            for(int k=0;k<m;k++)
             {
-                v.push_back({s_pos, i});
+                if(a[j]!=0)
+                {
+                    if(b[k]%a[j]==0)
+                    {
+                        nodeA[j].push_back({k,'b'});
+                        nodeB[k].push_back({j,'a'});
+                        cout<<a[j]<<" "<<b[k]<<endl;
+                    }
+                }
+                else if(b[k]==0)
+                {
+                    nodeA[j].push_back({k,'b'});
+                    nodeB[k].push_back({j,'a'});
+                }
             }
         }
-        //pdbug(v.size());
+        int checkedA[n]={0},
+            checkedB[m]={0};
+        int ans=0,countA,countB;
 
 
-        for(i=v.size()-1;i>=0;i--)
+        for(int j=0;j<n;j++)
         {
-            //pdbug(v[i].first, v[i].second);
-            for(int j=v[i].first+1; j<v[i].second;j++)
+            countA=0;
+            countB=0;
+            if(!checkedA[j])
             {
-                printf("%c",st[j]);
+                queue<pair<int,char> > q;
+                q.push({j,'a'});
+                countA++;
+                checkedA[j]=1;
+                while(!q.empty())
+                {
+                    pair<int,char> x=q.front();q.pop();
+                    if(x.second=='a')
+                    {
+                        //countA++;
+                        //checkedA[x.first]=1;
+                        for(int k=0;k<(int)nodeA[x.first].size();k++)
+                        {
+                            if(!checkedB[nodeA[x.first][k].first])
+                            {
+                                q.push(nodeA[x.first][k]);
+                                countB++;
+                                checkedB[nodeA[x.first][k].first]=1;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //countB++;
+                        //checkedB[x.first]=1;
+                        for(int k=0;k<(int)nodeB[x.first].size();k++)
+                        {
+                            if(!checkedA[nodeB[x.first][k].first])
+                            {
+                                q.push(nodeB[x.first][k]);
+                                countA++;
+                                checkedA[nodeB[x.first][k].first]=1;
+                            }
+                        }
+                    }
+                }
+
             }
+            //pdbug(countA,countB);
+            ans=ans+min(countA,countB);
         }
-        printf("%s",main_str);
+
+        print("Case ");
+        print(i);
+        print(": ");
+        print(ans);
         print(newline);
+
     }
 
     return 0;

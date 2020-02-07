@@ -61,7 +61,7 @@ template <typename T, typename... Args> void err(istream_iterator<string> it, T 
 //int dx[]={-1,-1,+0,+1,+1,+0};int dy[]={-1,+1,+2,+1,-1,-2}; ///Hexagonal Direction
 
 //-----I/O------
-char tcstr[100009];
+char tcstr[300];
 void scan(int &a){scanf("%d",&a);}
 void scan(LLD &a){scanf("%lld",&a);}
 void scan(char &a){scanf("%c",&a);}
@@ -78,68 +78,79 @@ void print(string a){printf("%s",a.c_str());}
 
 int main()
 {
-    char st[100009],ch;
-    while(scanf("%s",st)==1)
+    int n,flag=0;
+    scan(n);
+    while(n--)
     {
-        scan(ch);
-        //string st=stp;
-        char main_str[100009];
-        main_str[0]='\0';
-        vector<pair<int,int> > v;
-        int flag=0, s_pos=0, j=0, i=0;
-        //int sz=strlen(st);
-
-        for(;st[i]!='\0';i++)
-        {
-            if(st[i]=='[')
-            {
-                if((i-s_pos)>=2&&flag)
-                {
-                    v.push_back({s_pos, i});
-                }
-                s_pos=i;
-                flag=1;
-            }
-            else if(st[i]==']')
-            {
-                if((i-s_pos)>=2&&flag)
-                {
-                    v.push_back({s_pos, i});
-                }
-                flag=0;
-            }
-            else
-            {
-                if(!flag)
-                {
-                    main_str[j]=st[i];
-                    j++;
-                    main_str[j]='\0';
-                }
-            }
-
-        }
-
         if(flag)
         {
-            if((i-s_pos)>=2)
-            {
-                v.push_back({s_pos, i});
-            }
+            print(newline);
         }
-        //pdbug(v.size());
-
-
-        for(i=v.size()-1;i>=0;i--)
+        flag=1;
+        int b,sg,sb,a;
+        scan(b);
+        scan(sg);
+        scan(sb);
+        priority_queue<int> blue, green;
+        for(int i=0;i<sg;i++)
         {
-            //pdbug(v[i].first, v[i].second);
-            for(int j=v[i].first+1; j<v[i].second;j++)
+            scan(a);
+            green.push(a);
+        }
+        for(int i=0;i<sb;i++)
+        {
+            scan(a);
+            blue.push(a);
+        }
+
+        pair<int,int> result[b+10];
+        int pos=0,x,y;
+
+
+        while(blue.size()&&green.size())
+        {
+            for(pos=0;pos<b&&(blue.size()&&green.size());pos++)
             {
-                printf("%c",st[j]);
+                x=green.top();green.pop();
+                y=blue.top();blue.pop();
+                result[pos]={x,y};
+            }
+            for(int i=0;i<pos;i++)
+            {
+                if(result[i].first>result[i].second)
+                {
+                    green.push(result[i].first-result[i].second);
+                }
+                else if(result[i].first<result[i].second)
+                {
+                    blue.push(result[i].second-result[i].first);
+                }
             }
         }
-        printf("%s",main_str);
-        print(newline);
+        if(blue.size())
+        {
+            print("blue wins\n");
+            while(blue.size())
+            {
+                print(blue.top());
+                print(newline);
+                blue.pop();
+            }
+        }
+        else if(green.size())
+        {
+            print("green wins\n");
+            while(green.size())
+            {
+                print(green.top());
+                print(newline);
+                green.pop();
+            }
+        }
+        else
+        {
+            print("green and blue died\n");
+        }
     }
 
     return 0;

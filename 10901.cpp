@@ -61,7 +61,7 @@ template <typename T, typename... Args> void err(istream_iterator<string> it, T 
 //int dx[]={-1,-1,+0,+1,+1,+0};int dy[]={-1,+1,+2,+1,-1,-2}; ///Hexagonal Direction
 
 //-----I/O------
-char tcstr[100009];
+char tcstr[300];
 void scan(int &a){scanf("%d",&a);}
 void scan(LLD &a){scanf("%lld",&a);}
 void scan(char &a){scanf("%c",&a);}
@@ -78,68 +78,109 @@ void print(string a){printf("%s",a.c_str());}
 
 int main()
 {
-    char st[100009],ch;
-    while(scanf("%s",st)==1)
+    int c,flag=0;
+    scan(c);
+    while(c--)
     {
-        scan(ch);
-        //string st=stp;
-        char main_str[100009];
-        main_str[0]='\0';
-        vector<pair<int,int> > v;
-        int flag=0, s_pos=0, j=0, i=0;
-        //int sz=strlen(st);
-
-        for(;st[i]!='\0';i++)
+        if(flag)
         {
-            if(st[i]=='[')
+            print(newline);
+        }
+        flag=1;
+        int n,t,m;
+        scan(n);
+        scan(t);
+        scan(m);
+        pair<int,char> data[m];
+        int ans[m];
+        int a;
+        string s;
+        queue<int> lft,rit;
+        for(int i=0;i<m;i++)
+        {
+            scan(a);
+            scan(s);
+            data[i]={a,s[0]};
+            if(s[0]=='l')
             {
-                if((i-s_pos)>=2&&flag)
-                {
-                    v.push_back({s_pos, i});
-                }
-                s_pos=i;
-                flag=1;
-            }
-            else if(st[i]==']')
-            {
-                if((i-s_pos)>=2&&flag)
-                {
-                    v.push_back({s_pos, i});
-                }
-                flag=0;
+                lft.push(i);
             }
             else
             {
-                if(!flag)
+                rit.push(i);
+            }
+        }
+        int now_left=1;
+        int now_time=0;
+        ///there is a problem, ship ki oproyojone move korbe...?
+        while(lft.size()||rit.size())
+        {
+            if(data[lft.front()].first>now_time&&
+                                data[rit.front()].first>now_time)
+            {
+                if(data[lft.front()].first<data[rit.front()].first)
                 {
-                    main_str[j]=st[i];
-                    j++;
-                    main_str[j]='\0';
+                    if(now_left)
+                    {
+                        now_time=data[lft.front()].first;
+                    }
+                    else
+                    {
+                        now_time=data[lft.front()].first+t;
+                        now_left=1;
+                    }
+                    continue;
+                }
+                else if(data[lft.front()].first>data[rit.front()].first)
+                {
+                    if(now_left)
+                    {
+                        now_time=data[rit.front()].first+t;
+                        now_left=0;
+                    }
+                    else
+                    {
+                        now_time=data[rit.front()].first;
+                    }
+                    continue;
+                }
+                else
+                {
+                    now_time=data[rit.front()].first;
+                    continue;
                 }
             }
-
-        }
-
-        if(flag)
-        {
-            if((i-s_pos)>=2)
+            if(now_left)
             {
-                v.push_back({s_pos, i});
+                for(int i=0;i<n&&lft.size();i++)
+                {
+                    if(data[lft.front()].first<=now_time)
+                    {
+                        ans[lft.front()]=now_time+t;
+                        lft.pop();
+                    }
+                }
             }
-        }
-        //pdbug(v.size());
-
-
-        for(i=v.size()-1;i>=0;i--)
-        {
-            //pdbug(v[i].first, v[i].second);
-            for(int j=v[i].first+1; j<v[i].second;j++)
+            else
             {
-                printf("%c",st[j]);
+                for(int i=0;i<n&&rit.size();i++)
+                {
+                    if(data[rit.front()].first<=now_time)
+                    {
+                        ans[rit.front()]=now_time+t;
+                        rit.pop();
+                    }
+                }
             }
+            now_time+=t;
+            now_left=now_left?0:1;
         }
-        printf("%s",main_str);
-        print(newline);
+
+        for(int i=0;i<m;i++)
+        {
+            print(ans[i]);
+            print(newline);
+        }
     }
 
     return 0;
